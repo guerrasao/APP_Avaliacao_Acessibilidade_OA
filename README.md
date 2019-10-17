@@ -3,7 +3,7 @@
 ## Versão
 
 ```
-0.1
+1.0.0
 ```
 O sistema está em fase beta de desenvolvimento.
 

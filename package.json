@@ -1,7 +1,7 @@
 {
-  "name": "extracaodeparametros",
+  "name": "app_avaliacao_acessibilidade_oa",
   "version": "1.0.0",
-  "description": "Realiza extracao de parametros de documentos .docx, .pdf e .epub.",
+  "description": "Realiza avaliação da acessibilidade de Objetos de Aprendizagem (OAs) nos formatos .docx, .pdf e .epub.",
   "main": "server.js",
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -21,24 +21,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Julianaf/ExtracaoDeParametros.git"
+    "url": "git+https://github.com/guerrasao/APP_Avaliacao_Acessibilidade_OA.git"
   },
   "keywords": [
-    "extração",
-    "parametros",
+    "aplicativo",
+    "avaliação de acessibilidade",
+    "objetos de aprendizagem",
     "pdf",
-    "word",
     "docx",
     "epub",
     "acessibilidade",
-    "codigo limpo",
-    "refatoração",
-    "função recursiva"
+    "sistema especialista"
   ],
-  "author": "SILVA et al",
+  "author": "GUERRA et al",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/Julianaf/ExtracaoDeParametros/issues"
+    "url": "https://github.com/guerrasao/APP_Avaliacao_Acessibilidade_OA/issues"
   },
-  "homepage": "https://github.com/Julianaf/ExtracaoDeParametros#readme"
+  "homepage": "https://github.com/guerrasao/APP_Avaliacao_Acessibilidade_OA#readme"
 }
