@@ -1,17 +1,17 @@
-# Extração de Parâmetros
-Extração de arquivos .docx, .pdf e .epub.
+# Aplicativo Mobile para Avaliar a Acessibilidade de Objetos de Aprendizagem utilizando um Sistema Especialista
 
-Passos para configuração:
+## Versão
 
-Após realizar o clone, instale as seguintes módulos: 
+```
+0.1
+```
+O sistema está em fase beta de desenvolvimento.
 
-    1- npm install docx-extractor --save
-    2- npm install pdf.js-extract --save
-    3- npm i express --save
-    4- npm install body-parser --save
-    5- npm install rimraf --save
-    6- npm install cheerio --save
-    7- No terminal, dentro da pasta do projeto, usar o comando node server.js
-    8- http://localhost:3001/?caminhoarq=/informeocaminhodoarquivoaqui 
-    
-    9-npm install sqlite3
+## Descrição / Proposta
+Desenvolvimento de um aplicativo mobile para avaliar a acessibilidade de Objetos de Aprendizagem (OAs), aplicando técnicas de Inteligência Artificial, mais especificamente um Sistema Especialista (SE). Pretende-se desenvolver um protótipo que irá avaliar a acessibilidade de OAs no formato de texto, inicialmente nos formatos PDF e ePub, com base em diretrizes e recomendações que serão armazenadas na base de conhecimento do SE. Como resultados, espera-se que o aplicativo possa permitir o cadastro de diferentes OAs e definir o nível de acessibilidade dos mesmos.
+## Softwares e Tecnologias Utilizados
+* Extração de Parâmetros : https://github.com/Julianaf/ExtracaoDeParametros
+* sqlite3 >= 4.1.0
+
+## Autores
+* **Patrick** - *Desenvolvedor* - [guerrasao](https://github.com/guerrasao)
