@@ -33,9 +33,11 @@ module.exports = {
         this.legenda = RecebeDadosLegenda
     },
     ehTexto(RecebeJson, caminhoTextoWpr, caminhoTextoWr) {
-        return (((imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)) &&
-            (!imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:drawing/0/wp:inline/0/wp:docPr/0/a:hlinkClick/0`)) &&
-            (imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`).toUpperCase() !== 'LEGENDA')))
+        return (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:t/0`)) ||
+            (((imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)) ||
+                (!imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:drawing/0/wp:inline/0/wp:docPr/0/a:hlinkClick/0`)) ||
+                ((imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)) &&
+                    (imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`).toUpperCase() !== 'LEGENDA'))))
     },
     ehVideo(RecebeJson, caminhoVideo) {
         return ((imports.pointer.has(RecebeJson, `${caminhoVideo}wp:docPr/0/$/id`)) &&
@@ -116,31 +118,34 @@ module.exports = {
     ExtrairTabelas(RecebeJson) {
         let CaminhoTabela = `/w:document/w:body/0/w:tbl`
 
-        let TotalLinhasTbl = imports.pointer.get(RecebeJson, CaminhoTabela).length
-        for (let i = 0; i < TotalLinhasTbl; i++) {
-            CaminhoTabela = `/w:document/w:body/0/w:tbl/${i}/w:tblPr/0/`
-            try {
-                if (imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblStyle/0/$/w:val`).length > 0) {
-                    let estiloTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblStyle/0/$/w:val`)
-                    let altTabela = ''
-                    let descricaoTabela = ''
-                    if (imports.pointer.has(RecebeJson, `${CaminhoTabela}w:tblCaption/0/$/w:val`))
-                        altTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblCaption/0/$/w:val`)
-                    if (imports.pointer.has(RecebeJson, `${CaminhoTabela}w:tblDescription/0/$/w:val`))
-                        descricaoTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblDescription/0/$/w:val`)
+        if (imports.pointer.has(RecebeJson, CaminhoTabela)) {
+            let TotalLinhasTbl = imports.pointer.get(RecebeJson, CaminhoTabela).length
+            for (let i = 0; i < TotalLinhasTbl; i++) {
+                CaminhoTabela = `/w:document/w:body/0/w:tbl/${i}/w:tblPr/0/`
+                try {
+                    if ((imports.pointer.has(RecebeJson, `${CaminhoTabela}w:tblStyle/0/$/w:val`)) ||
+                        (imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblStyle/0/$/w:val`).length > 0)) {
+                        let estiloTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblStyle/0/$/w:val`)
+                        let altTabela = ''
+                        let descricaoTabela = ''
+                        if (imports.pointer.has(RecebeJson, `${CaminhoTabela}w:tblCaption/0/$/w:val`))
+                            altTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblCaption/0/$/w:val`)
+                        if (imports.pointer.has(RecebeJson, `${CaminhoTabela}w:tblDescription/0/$/w:val`))
+                            descricaoTabela = imports.pointer.get(RecebeJson, `${CaminhoTabela}w:tblDescription/0/$/w:val`)
 
-                    imports.tratativaClass.incrementaSeguenciaMidias()
-                    imports.classDocument.inserirTabelas(
-                        imports.tratativaClass.seguenciaMidias,
-                        null,
-                        estiloTabela,
-                        altTabela,
-                        descricaoTabela,
-                        null
-                    )
-                    this.ExtrairEstruturaTabelas(RecebeJson, i, imports.tratativaClass.seguenciaMidias)
-                }
-            } catch (e) { }
+                        imports.tratativaClass.incrementaSeguenciaMidias()
+                        imports.classDocument.inserirTabelas(
+                            imports.tratativaClass.seguenciaMidias,
+                            null,
+                            estiloTabela,
+                            altTabela,
+                            descricaoTabela,
+                            null
+                        )
+                        this.ExtrairEstruturaTabelas(RecebeJson, i, imports.tratativaClass.seguenciaMidias)
+                    }
+                } catch (e) { }
+            }
         }
     },
     ExtrairEstruturaTabelas(RecebeJson, i, seguenciaTabela) {
@@ -148,24 +153,28 @@ module.exports = {
         let tamanhoFonte = ''
         let corFonte = ''
         let corFundo = ''
-        for (let t = 0; t < imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr`).length; t++) {
-            for (let t2 = 0; t2 < imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc`).length; t2++) {
-                fonteTexto = ''
-                tamanhoFonte = ''
-                corFonte = ''
-                corFundo = ''
+        if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr`)) {
+            for (let t = 0; t < imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr`).length; t++) {
+                if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc`)) {
+                    for (let t2 = 0; t2 < imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc`).length; t2++) {
+                        fonteTexto = ''
+                        tamanhoFonte = ''
+                        corFonte = ''
+                        corFundo = ''
 
-                if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:rFonts/0/$/w:hAnsi`))
-                    fonteTexto = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:rFonts/0/$/w:hAnsi`)
-                if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:sz/0/$/w:val`))
-                    tamanhoFonte = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:sz/0/$/w:val`) / 2
-                if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:color/0/$/w:val`))
-                    corFonte = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:color/0/$/w:val`)
-                if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:highlight/0/$/w:val`))
-                    corFundo = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:highlight/0/$/w:val`)
+                        if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:rFonts/0/$/w:hAnsi`))
+                            fonteTexto = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:rFonts/0/$/w:hAnsi`)
+                        if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:sz/0/$/w:val`))
+                            tamanhoFonte = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:sz/0/$/w:val`) / 2
+                        if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:color/0/$/w:val`))
+                            corFonte = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:color/0/$/w:val`)
+                        if (imports.pointer.has(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:highlight/0/$/w:val`))
+                            corFundo = imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:tbl/${i}/w:tr/${t}/w:tc/${t2}/w:p/0/w:r/0/w:rPr/0/w:highlight/0/$/w:val`)
 
-                //console.log(fonteTexto + ' - ' + tamanhoFonte + ' - ' + corFonte + ' - ' + corFundo + ' - ' + seguenciaTabela)
-                // Inserir objeto EstrutraTabela
+                        //console.log(fonteTexto + ' - ' + tamanhoFonte + ' - ' + corFonte + ' - ' + corFundo + ' - ' + seguenciaTabela)
+                        // Inserir objeto EstrutraTabela
+                    }
+                }
             }
         }
     },
@@ -173,50 +182,64 @@ module.exports = {
         let caminhoTextoWr = `/w:document/w:body/0/w:p/${PosicaoI}/w:r/${PosicaoJ}/`
         let caminhoTextoWpr = `/w:document/w:body/0/w:p/${PosicaoI}/w:pPr/0/`
 
-        if (imports.baseWord.ehTexto(RecebeJson, caminhoTextoWpr, caminhoTextoWr)) {
-            let RecebeDadosTexto = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:t/0`)
-            imports.tratativaClass.extrairQtdCaracteres(RecebeDadosTexto.trim())
-            if (imports.tratativaClass.qtdCaracteres > 0) {
-                let corDaFonte = '000000'
-                let tamanhoDaFonte = 11
-                let tipoDaFonte = 'Calibri (Corpo)'
-                let corDeFundo = 'transparent'
-                let titulo = 'Normal'
-                let alinhamentoTexto = 'left'
+        if (imports.pointer.has(RecebeJson, caminhoTextoWr)) {
+            console.log(imports.pointer.get(RecebeJson, `/w:document/w:body/0/w:p/${PosicaoI}/w:r/${PosicaoJ}`))
+        }
 
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:color/0/$/w:val`))
-                    corDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:color/0/$/w:val`)
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:sz/0/$/w:val`))
-                    tamanhoDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:sz/0/$/w:val`) / 2
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:rFonts/0/$/w:hAnsi`))
-                    tipoDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:rFonts/0/$/w:hAnsi`)
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:highlight/0/$/w:val`))
-                    corDeFundo = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:highlight/0/$/w:val`)
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)) {
-                    titulo = imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)
-                    for (let s = 0; s < imports.classStyle.style.length; s++) {
-                        if (imports.classStyle.style[s].titulo === titulo) {
-                            tipoDaFonte = imports.classStyle.style[s].nomeFonte
-                        }
+        if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:t/0/_`)) {
+            this.ArmazenarTexto(imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:t/0/_`), RecebeJson, caminhoTextoWr, caminhoTextoWpr)
+        }
+        //`${caminhoTextoWr}w:t/0/$`
+
+        if (imports.baseWord.ehTexto(RecebeJson, caminhoTextoWpr, caminhoTextoWr)) {
+            if (imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:t/0`)) {
+                this.ArmazenarTexto(imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:t/0`), RecebeJson, caminhoTextoWr, caminhoTextoWpr)
+            }
+        }
+    },
+    ArmazenarTexto(Texto, RecebeJson, caminhoTextoWr, caminhoTextoWpr) {
+        imports.tratativaClass.extrairQtdCaracteres(Texto)
+
+        if (imports.tratativaClass.qtdCaracteres > 0) {
+            let corDaFonte = '000000'
+            let tamanhoDaFonte = 11
+            let tipoDaFonte = 'Calibri (Corpo)'
+            let corDeFundo = 'transparent'
+            let titulo = 'Normal'
+            let alinhamentoTexto = 'left'
+
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:color/0/$/w:val`))
+                corDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:color/0/$/w:val`)
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:sz/0/$/w:val`))
+                tamanhoDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:sz/0/$/w:val`) / 2
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:rFonts/0/$/w:hAnsi`))
+                tipoDaFonte = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:rFonts/0/$/w:hAnsi`)
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:highlight/0/$/w:val`))
+                corDeFundo = imports.pointer.get(RecebeJson, `${caminhoTextoWr}w:rPr/0/w:highlight/0/$/w:val`)
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)) {
+                titulo = imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:pStyle/0/$/w:val`)
+                for (let s = 0; s < imports.classStyle.style.length; s++) {
+                    if (imports.classStyle.style[s].titulo === titulo) {
+                        tipoDaFonte = imports.classStyle.style[s].nomeFonte
                     }
                 }
-                if (imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:jc/0/$/w:val`))
-                    alinhamentoTexto = imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:jc/0/$/w:val`)
-
-                imports.tratativaClass.incrementaSeguenciaMidias()
-                imports.classDocument.inserirTextos(
-                    imports.tratativaClass.seguenciaMidias,
-                    imports.tratativaClass.seguenciaMidias,
-                    RecebeDadosTexto,
-                    imports.tratativaClass.qtdCaracteres,
-                    corDaFonte,
-                    tamanhoDaFonte,
-                    tipoDaFonte,
-                    corDeFundo,
-                    titulo,
-                    alinhamentoTexto
-                )
             }
+            if (imports.pointer.has(RecebeJson, `${caminhoTextoWpr}w:jc/0/$/w:val`))
+                alinhamentoTexto = imports.pointer.get(RecebeJson, `${caminhoTextoWpr}w:jc/0/$/w:val`)
+
+            imports.tratativaClass.incrementaSeguenciaMidias()
+            imports.classDocument.inserirTextos(
+                imports.tratativaClass.seguenciaMidias,
+                imports.tratativaClass.seguenciaMidias,
+                Texto,
+                imports.tratativaClass.qtdCaracteres,
+                corDaFonte,
+                tamanhoDaFonte,
+                tipoDaFonte,
+                corDeFundo,
+                titulo,
+                alinhamentoTexto
+            )
         }
     },
     ExtrairVideos(RecebeJson, PosicaoI, PosicaoJ) {
