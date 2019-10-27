@@ -1,5 +1,7 @@
 # Aplicativo Mobile para Avaliar a Acessibilidade de Objetos de Aprendizagem utilizando um Sistema Especialista
 
+## Projeto permanentemente movido para: https://github.com/guerrasao/AplicativoAvaliacaoAcessibilidadeOA
+
 ## Versão
 
 ```
